@@ -1,0 +1,39 @@
+server:
+  PORT: 4000
+
+graphql:
+  debug: true
+  playground: true
+  installSubscriptionHandlers: true
+
+db:
+  type: postgres
+  host: localhost
+  port: 5432
+  username: postgres
+  password: postgres
+  database: protrack
+  synchronize: true
+  migrationsRun: false
+  logging: false
+
+kafka: &kafka
+  transport: 6
+  options:
+    client:
+      brokers: [localhost:9092]
+    consumer:
+      groupId: challenge-consumer
+    producer:
+      allowAutoTopicCreation: true
+      groupId: challenge-consumer
+      retry:
+        retries: 5
+
+kafka_services:
+  submission:
+    <<: *kafka
+    name: KAFKA_SUBMISSION_SERVICE
+    options:
+      consumer:
+        groupId: submission-consumer

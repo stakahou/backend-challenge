@@ -1,0 +1,35 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type SubmissionEntity {
+  id: String
+  created_at: DateTime!
+  update_at: DateTime!
+  deleted_at: DateTime!
+  challenge: String!
+  repository: String!
+  status: String!
+  grade: Float!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Query {
+  submission: SubmissionEntity!
+  submissions: [SubmissionEntity!]!
+}
+
+type Mutation {
+  createSubmission(createSubmissionInput: CreateSubmissionInput!): SubmissionEntity
+}
+
+input CreateSubmissionInput {
+  challenge: String!
+  repository: String!
+  status: String!
+  grade: Float!
+}
