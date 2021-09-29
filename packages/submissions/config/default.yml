@@ -19,21 +19,14 @@ db:
 
 kafka: &kafka
   transport: 6
-  options:
+  options: &kafka_options
     client:
-      brokers: [localhost:9092]
+      brokers:
+        - localhost:9092
     consumer:
-      groupId: challenge-consumer
-    producer:
-      allowAutoTopicCreation: true
-      groupId: challenge-consumer
-      retry:
-        retries: 5
+      groupId: submission-consumer\
 
 kafka_services:
   submission:
     <<: *kafka
     name: KAFKA_SUBMISSION_SERVICE
-    options:
-      consumer:
-        groupId: submission-consumer

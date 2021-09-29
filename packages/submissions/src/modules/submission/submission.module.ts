@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as config from 'config';
 import { ChallengeModule } from '../challenge/challenge.module';
 import { KafkaProducerEnum } from '../shared/enums';
+import { SubmissionController } from './submission.controller';
 import { SubmissionRepository } from './submission.repository';
 import { SubmissionResolver } from './submission.resolver';
 import { SubmissionService } from './submission.service';
@@ -12,7 +13,7 @@ const { submission: kafkaSubmissionService } = config.get('kafka_services');
 
 const kafkaProvider: Provider = {
   provide: KafkaProducerEnum.KAFKA_SUBMISSION_PRODUCER,
-  useFactory: async (client: ClientKafka) => client.connect(),
+  useFactory: async (client: ClientKafka) => await client.connect(),
   inject: [kafkaSubmissionService.name],
 };
 
@@ -22,6 +23,7 @@ const kafkaProvider: Provider = {
     TypeOrmModule.forFeature([SubmissionRepository]),
     ChallengeModule,
   ],
+  controllers: [SubmissionController],
   providers: [SubmissionResolver, SubmissionService, kafkaProvider],
 })
 export class SubmissionModule {}

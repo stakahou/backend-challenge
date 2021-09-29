@@ -5,7 +5,6 @@ import {
   IsString,
   IsUrl,
   IsUUID,
-  Matches,
   Min,
 } from 'class-validator';
 import { SubmissionStatusEnum } from 'src/modules/shared/enums';
@@ -21,9 +20,6 @@ export class SubmissionEntity extends BaseEntity {
   challenge: string;
 
   @IsUrl()
-  @Matches(
-    /^([A-Za-z0-9]+@|http(|s)\:\/\/)([A-Za-z0-9.]+(:\d+)?)(?::|\/)([\d\/\w.-]+?)(\.git)?$/i,
-  )
   @Column()
   @Field()
   repository: string;

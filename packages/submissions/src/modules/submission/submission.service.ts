@@ -1,11 +1,22 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Producer } from '@nestjs/microservices/external/kafka.interface';
 import { Like } from 'typeorm';
 import { ChallengeService } from '../challenge/challenge.service';
-import { KafkaProducerEnum, KafkaTopicEnum } from '../shared/enums';
+import {
+  KafkaProducerEnum,
+  KafkaTopicEnum,
+  SubmissionStatusEnum,
+} from '../shared/enums';
 import { CreateSubmissionInput } from './dto/create-submission.input';
 import { GetSubmissionArgs } from './dto/get-submission.args';
 import { UpdateSubmissionInput } from './dto/update-submission.input';
+import { SubmissionEntity } from './entities/submission.entity';
 import { SubmissionRepository } from './submission.repository';
 
 @Injectable()
@@ -17,25 +28,47 @@ export class SubmissionService {
     private readonly challengeService: ChallengeService,
   ) {}
 
-  async create(createSubmissionInput: CreateSubmissionInput) {
-    await this.challengeService.findOne(createSubmissionInput.challenge);
-
-    const submission = this.submissionRepository.create(createSubmissionInput);
-
-    const { id: submissionId, repository: repositoryUrl } =
-      await this.submissionRepository.save(submission);
-
-    const correction = await this.kafkaProducer.send({
+  private pubSubmission(args) {
+    this.kafkaProducer.send({
       topic: KafkaTopicEnum.CHALLENGE_CORRECTION,
       messages: [
         {
           key: 'submissions',
-          value: JSON.stringify({ submissionId, repositoryUrl }),
+          value: JSON.stringify(args),
         },
       ],
     });
+  }
 
-    // return this.update(submissionId, { grade, status });
+  private async hasErrorInSubmission({
+    challenge,
+    repository,
+  }: CreateSubmissionInput): Promise<HttpException | void> {
+    try {
+      await this.challengeService.findOne(challenge);
+      if (!RegExp('(?:git@|https://)github.com[:/](.*).git').test(repository)) {
+        throw new BadRequestException();
+      }
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async create(createSubmissionInput: CreateSubmissionInput) {
+    const error = await this.hasErrorInSubmission(createSubmissionInput);
+
+    const submission = this.submissionRepository.create(createSubmissionInput);
+
+    if (error) submission.status = SubmissionStatusEnum.ERROR;
+
+    const { id: submissionId, repository: repositoryUrl } =
+      await this.submissionRepository.save(submission);
+
+    if (error) throw error;
+
+    this.pubSubmission({ submissionId, repositoryUrl });
+
+    return submission;
   }
 
   findAll({ limit: take, offset: skip, filter = {} }: GetSubmissionArgs) {
@@ -59,7 +92,10 @@ export class SubmissionService {
     return found;
   }
 
-  async update(id: string, updateSubmissionInput: UpdateSubmissionInput) {
+  async update(
+    id: string,
+    updateSubmissionInput: UpdateSubmissionInput | Partial<SubmissionEntity>,
+  ) {
     const submission = await this.findOne(id);
     Object.assign(submission, updateSubmissionInput);
     return this.submissionRepository.save(submission);
