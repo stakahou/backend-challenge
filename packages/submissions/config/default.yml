@@ -10,9 +10,9 @@ db:
   type: postgres
   host: localhost
   port: 5432
-  username: postgres
-  password: postgres
-  database: protrack
+  username: docker
+  password: docker
+  database: rocketseat_challenge
   synchronize: true
   migrationsRun: false
   logging: false
