@@ -8,17 +8,17 @@ import { BaseEntity } from '../../../modules/shared/entities/base.entity';
 export class SubmissionEntity extends BaseEntity {
   @IsUUID()
   @Column()
-  @Field((type) => String)
+  @Field()
   challenge: string;
 
   @IsUrl()
   @Column()
-  @Field((type) => String)
+  @Field()
   repository: string;
 
   @IsString()
   @Column()
-  @Field((type) => String)
+  @Field()
   status: string;
 
   @IsNumber()

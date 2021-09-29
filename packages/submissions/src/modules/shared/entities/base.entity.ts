@@ -12,7 +12,7 @@ export abstract class BaseEntity {
   @IsOptional()
   @IsUUID()
   @PrimaryGeneratedColumn('uuid')
-  @Field((type) => String, { nullable: true })
+  @Field({ nullable: true })
   id?: string;
 
   @CreateDateColumn()

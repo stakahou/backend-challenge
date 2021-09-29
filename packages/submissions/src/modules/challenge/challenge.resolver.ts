@@ -1,6 +1,8 @@
+import { ParseUUIDPipe } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ChallengeService } from './challenge.service';
 import { CreateChallengeInput } from './dto/create-challenge.input';
+import { GetChallengeArgs } from './dto/get-challenge.args';
 import { UpdateChallengeInput } from './dto/update-challenge.input';
 import { ChallengeEntity } from './entities/challenge.entity';
 
@@ -16,25 +18,25 @@ export class ChallengeResolver {
   }
 
   @Query((returns) => [ChallengeEntity], { name: 'challenges' })
-  findAll() {
-    return this.challengeService.findAll();
+  findAll(@Args() getChallengeArgs: GetChallengeArgs) {
+    return this.challengeService.findAll(getChallengeArgs);
   }
 
   @Query((returns) => ChallengeEntity, { name: 'challenge' })
-  findOne(@Args('id') id: string) {
+  findOne(@Args('id', ParseUUIDPipe) id: string) {
     return this.challengeService.findOne(id);
   }
 
   @Mutation((returns) => ChallengeEntity)
   updateChallenge(
-    @Args('id') id: string,
+    @Args('id', ParseUUIDPipe) id: string,
     @Args('updateChallengeInput') updateChallengeInput: UpdateChallengeInput,
   ) {
     return this.challengeService.update(id, updateChallengeInput);
   }
 
   @Mutation((returns) => ChallengeEntity)
-  removeChallenge(@Args('id') id: string) {
+  removeChallenge(@Args('id', ParseUUIDPipe) id: string) {
     return this.challengeService.remove(id);
   }
 }
