@@ -1,28 +1,28 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { IsNumber, IsString, IsUrl, IsUUID } from 'class-validator';
+import { Column, Entity } from 'typeorm';
 import { BaseEntity } from '../../../modules/shared/entities/base.entity';
-// import { Column, Entity } from 'typeorm';
 
 @ObjectType()
-// @Entity({ name: 'user' })
+@Entity({ name: 'submission' })
 export class SubmissionEntity extends BaseEntity {
   @IsUUID()
-  // @Column()
-  @Field()
+  @Column()
+  @Field((type) => String)
   challenge: string;
 
   @IsUrl()
-  // @Column()
-  @Field()
+  @Column()
+  @Field((type) => String)
   repository: string;
 
   @IsString()
-  // @Column()
-  @Field()
+  @Column()
+  @Field((type) => String)
   status: string;
 
   @IsNumber()
-  // @Column()
+  @Column()
   @Field()
   grade: number;
 }
