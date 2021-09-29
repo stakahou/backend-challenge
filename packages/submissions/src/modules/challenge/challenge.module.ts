@@ -7,5 +7,6 @@ import { ChallengeService } from './challenge.service';
 @Module({
   imports: [TypeOrmModule.forFeature([ChallengeRepository])],
   providers: [ChallengeResolver, ChallengeService],
+  exports: [ChallengeService],
 })
 export class ChallengeModule {}

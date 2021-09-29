@@ -6,3 +6,9 @@ export enum KafkaProducerEnum {
 export enum KafkaTopicEnum {
   CHALLENGE_CORRECTION = 'challenge.correction',
 }
+
+export enum SubmissionStatusEnum {
+  PENDING = 'Pending',
+  ERROR = 'Error',
+  DONE = 'Done',
+}

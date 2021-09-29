@@ -1,5 +1,13 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { IsNumber, IsString, IsUrl, IsUUID } from 'class-validator';
+import {
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUrl,
+  IsUUID,
+  Min,
+} from 'class-validator';
+import { SubmissionStatusEnum } from 'src/modules/shared/enums';
 import { Column, Entity } from 'typeorm';
 import { BaseEntity } from '../../../modules/shared/entities/base.entity';
 
@@ -17,12 +25,18 @@ export class SubmissionEntity extends BaseEntity {
   repository: string;
 
   @IsString()
-  @Column()
+  @Column({
+    type: 'enum',
+    enum: SubmissionStatusEnum,
+    default: SubmissionStatusEnum.PENDING,
+  })
   @Field()
-  status: string;
+  status: SubmissionStatusEnum;
 
+  @IsOptional()
   @IsNumber()
-  @Column()
-  @Field()
-  grade: number;
+  @Min(0)
+  @Column({ nullable: true })
+  @Field({ nullable: true })
+  grade?: number;
 }

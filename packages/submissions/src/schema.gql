@@ -24,14 +24,19 @@ type SubmissionEntity {
   challenge: String!
   repository: String!
   status: String!
-  grade: Float!
+  grade: Float
 }
 
 type Query {
-  submission: SubmissionEntity!
-  submissions: [SubmissionEntity!]!
+  submissions(offset: Int = 0, limit: Int = 10, filter: FilterSubmissionInput): [SubmissionEntity!]!
+  submission(id: String!): SubmissionEntity!
   challenges(offset: Int = 0, limit: Int = 10, filter: FilterChallengeInput): [ChallengeEntity!]!
   challenge(id: String!): ChallengeEntity!
+}
+
+input FilterSubmissionInput {
+  challenge: String
+  status: String
 }
 
 input FilterChallengeInput {
@@ -40,7 +45,9 @@ input FilterChallengeInput {
 }
 
 type Mutation {
-  createSubmission(createSubmissionInput: CreateSubmissionInput!): SubmissionEntity
+  createSubmission(createSubmissionInput: CreateSubmissionInput!): SubmissionEntity!
+  updateSubmission(updateSubmissionInput: UpdateSubmissionInput!, id: String!): SubmissionEntity!
+  removeSubmission(id: String!): SubmissionEntity!
   createChallenge(createChallengeInput: CreateChallengeInput!): ChallengeEntity!
   updateChallenge(updateChallengeInput: UpdateChallengeInput!, id: String!): ChallengeEntity!
   removeChallenge(id: String!): ChallengeEntity!
@@ -49,8 +56,11 @@ type Mutation {
 input CreateSubmissionInput {
   challenge: String!
   repository: String!
-  status: String!
-  grade: Float!
+}
+
+input UpdateSubmissionInput {
+  challenge: String
+  repository: String
 }
 
 input CreateChallengeInput {
